@@ -33,25 +33,39 @@ const useStyles = makeStyles((theme) => ({
 export default function Products() {
   const classes = useStyles();
   const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     axios.get(`${API_PATHS.bff}/products`)
-      .then(res => setProducts(res.data.products));
+      .then(res => {
+        setLoading(false);
+        setProducts(res.data.products);
+      })
+      .catch(e => console.log({e})
+      );
+
   }, [])
+
+  if (loading) {
+    return <h1>Loading products...</h1>
+  }
 
   return (
     <Grid container spacing={4}>
       {products.map((product: Product, index: number) => (
-        <Grid item key={product.id} xs={12} sm={6} md={4}>
+        <Grid item key={product.productId} xs={12} sm={6} md={4}>
           <Card className={classes.card}>
             <CardMedia
               className={classes.cardMedia}
-              image={`https://source.unsplash.com/random?sig=${index}`}
+              image={`https://source.unsplash.com/random?sig=${index}&topics=flowers`}
               title="Image title"
             />
             <CardContent className={classes.cardContent}>
+            <Typography>
+                {product.category}
+              </Typography>
               <Typography gutterBottom variant="h5" component="h2">
-                {product.title}
+                {product.name}
               </Typography>
               <Typography>
                 {formatAsPrice(product.price)}
